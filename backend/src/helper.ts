@@ -16,3 +16,7 @@ export function success<T>(value: T): Success<T> {
 }
 
 type StringLiteral<T> = T extends string ? T : never
+
+export type AccessToken = {
+    access_token: string;
+  }

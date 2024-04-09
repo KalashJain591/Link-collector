@@ -3,6 +3,7 @@ import { userService } from "./user.service";
 import { Failure, Success } from "src/helper";
 import { UserDocument } from "./user.schema";
 import { CreateUserDto } from "./dto/create-user.dto";
+import { getUserDto } from "./dto/update-user.dto";
 
 @Controller('user')
 export class UserController {
@@ -11,9 +12,14 @@ export class UserController {
     ){}
     
     @Get()
-    async getUser(){
-        const user  = await this.userService.getUser();
-        return user ;
+    async getUser(
+        @Body() userDto: getUserDto
+    ){
+        console.log('Get user');
+        const user:
+        | Failure<string>
+        | Success<UserDocument> = await this.userService.getUser(userDto);
+        return user;
     }
     @Post()
     async createUser(
