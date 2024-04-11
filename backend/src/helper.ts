@@ -19,4 +19,11 @@ type StringLiteral<T> = T extends string ? T : never
 
 export type AccessToken = {
     access_token: string;
-  }
+}
+
+export type Item = {
+    link: string;
+    heading: string;
+    desc: string;
+    upvotes: number;
+}

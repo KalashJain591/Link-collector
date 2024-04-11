@@ -13,6 +13,8 @@ export class User {
     password:string;
     @Prop()
     contact?: string;
+    @Prop()
+    userResources?: string[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

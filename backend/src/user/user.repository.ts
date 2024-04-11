@@ -12,6 +12,15 @@ export class UserRepository{
         @InjectModel(User.name)
         private userModel : Model<UserDocument>
     ){}
+
+    async getUsers():Promise<Failure<string> | Success<UserDocument[]>>{
+        const users = await this.userModel.find();
+        if(users.length === 0)
+            return failure('No users found');
+        else 
+            return success(users);
+    }
+
     async getUser(data : getUserDto):Promise<Failure<string> | Success<UserDocument>> {
         const {email, password} = data;
         const user = await this.userModel.findOne({email, password});

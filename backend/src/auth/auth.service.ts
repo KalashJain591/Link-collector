@@ -15,7 +15,7 @@ export class AuthService {
     private userRepository: UserRepository
   ) {}
 
-  async validateUser(email: string, password: string): Promise<UserDocument> {
+  async validateUser(email: string, password: string): Promise<AccessToken> {
     const result: Success<UserDocument> | Failure<string> = await this.userRepository.getUserByEmail(email);
 
 
@@ -29,7 +29,8 @@ export class AuthService {
     if (!isMatch) {
       throw new BadRequestException('Password does not match');
     }
-    return user;
+    return this.login(user)
+    
   }
 
   async login(user: UserDocument): Promise<AccessToken> {
@@ -37,7 +38,7 @@ export class AuthService {
     return { access_token: this.jwtService.sign(payload) };
   }
 
-  async register(user: CreateUserDto): Promise<AccessToken | string> {
+  async register(user: CreateUserDto): Promise<Failure<string> | Success<UserDocument>> {
     const result = await this.userRepository.getUserByEmail(user.email);
     if (result.ok) {
       throw new BadRequestException('email already exists');
@@ -45,10 +46,6 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(user.password, 10);
     const newUser: User = { ...user, password: hashedPassword };
     const userCreated =  await this.userRepository.createUser(newUser);
-    if(userCreated.ok){
-        return this.login(userCreated.value);
-    }
-    else 
-        return {access_token: ''};
+    return userCreated
   }
 }
