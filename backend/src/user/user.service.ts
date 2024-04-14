@@ -17,6 +17,8 @@ export class userService {
         const result = await this.authService.register(userDto);
         if(result.ok) {
             const accessToken = await this.authService.login(result.value);
+            result.value.accessToken = accessToken.access_token;
+            return result ;
         }
         else {
             return result;

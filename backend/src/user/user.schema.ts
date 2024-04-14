@@ -15,6 +15,8 @@ export class User {
     contact?: string;
     @Prop()
     userResources?: string[];
+    @Prop()
+    accessToken?: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

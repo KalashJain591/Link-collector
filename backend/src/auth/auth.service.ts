@@ -5,7 +5,7 @@ import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { User, UserDocument } from 'src/user/user.schema';
 import { userService } from 'src/user/user.service';
 import { UserRepository } from 'src/user/user.repository';
-import { Failure, Success, AccessToken } from 'src/helper';
+import { Failure, Success, AccessToken, success, failure } from 'src/helper';
 
 @Injectable()
 export class AuthService {
@@ -38,14 +38,19 @@ export class AuthService {
     return { access_token: this.jwtService.sign(payload) };
   }
 
-  async register(user: CreateUserDto): Promise<Failure<string> | Success<UserDocument>> {
-    const result = await this.userRepository.getUserByEmail(user.email);
-    if (result.ok) {
-      throw new BadRequestException('email already exists');
+    async register(user: CreateUserDto): Promise<Failure<string> | Success<UserDocument>> {
+      try{
+      const result = await this.userRepository.getUserByEmail(user.email);
+      if (result.ok) {
+        throw new BadRequestException('email already exists');
+      }
+      const hashedPassword = await bcrypt.hash(user.password, 10);
+      const newUser: User = { ...user, password: hashedPassword };
+      const userCreated =  await this.userRepository.createUser(newUser);
+      return userCreated;
     }
-    const hashedPassword = await bcrypt.hash(user.password, 10);
-    const newUser: User = { ...user, password: hashedPassword };
-    const userCreated =  await this.userRepository.createUser(newUser);
-    return userCreated
+    catch(err) {
+    console.log('unable-to-create-user', err);
+    }
   }
 }
